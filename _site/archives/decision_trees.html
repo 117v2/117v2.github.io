@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Decision Trees | Not a Blog</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Decision Trees" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Decision Trees 计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据 可能会过拟合" />
+<meta property="og:description" content="Decision Trees 计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据 可能会过拟合" />
+<link rel="canonical" href="http://localhost:4000/archives/decision_trees.html" />
+<meta property="og:url" content="http://localhost:4000/archives/decision_trees.html" />
+<meta property="og:site_name" content="Not a Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-25T00:00:00+08:00" />
+<script type="application/ld+json">
+{"headline":"Decision Trees","dateModified":"2019-11-25T00:00:00+08:00","datePublished":"2019-11-25T00:00:00+08:00","url":"http://localhost:4000/archives/decision_trees.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/archives/decision_trees.html"},"description":"Decision Trees 计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据 可能会过拟合","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link href="https://fonts.googleapis.com/css?family=Domine|Asap|Noto+Sans+SC|Noto+Serif+SC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Not a Blog" /></head><body><script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<header class="site-header" role="banner">
+
+  <div class="wrapper"><!-- <a class="site-title" rel="author" href="/">Not a Blog</a> -->
+    <!-- <a class="site-title" rel="author" href="/"> $$\mathbb{\text{Not A BB of R2FsCg}}$$ </a> -->
+    <a class="site-title" rel="author" href="/" style="font-family: 'Times New Roman'"> Not a Blog of <span style="color: gray;">@R2FsCg</span> </a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/links/">Links</a><a class="page-link" href="/tags/">Tags</a><a class="page-link" href="/categories/">Categories</a><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Decision Trees</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2019-11-25T00:00:00+08:00" itemprop="datePublished">Published: Nov 25, 2019</time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="decision-trees">Decision Trees</h1>
+<ul>
+  <li>计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据</li>
+  <li>可能会过拟合</li>
+</ul>
+
+<p>决策树的学习通常分为三部分:特征选择,决策树的生成和决策树的剪枝.</p>
+
+<h2 id="id3">ID3</h2>
+<p>Iternative Dichotomizer 3, 由 Ross Quinlan (Quinlan, J. R. 1986.  Induction of Decision Trees. Mach. Learn. 1, 1 (Mar. 1986), 81-106.) 在1986年提出。</p>
+
+<p>ID3 决策树可以有多个分支，但是不能处理特征值为连续的情况。决策树是一种贪心算法，每次选取的分割数据的特征都是当前的最佳选择，并不关心是否达到全局最优。在 ID3 中，每次根据<strong>最大信息熵增益</strong>选取当前最佳的特征来分割数据，并按照该特征的所有取值来切分，也就是说如果一个特征有3种取值，数据将被切分3份，一旦按某特征切分后，该特征在之后的算法执行中，将不再起作用。</p>
+
+<p>划分数据集的大原则是：<strong>将无序的数据变得更加有序</strong>。ID3使用<strong>信息增益</strong>(数据集划分前后信息发生的变化)的方法来划分。
+要计算信息增益，我们需要一种度量集合信息的方式，比如香农熵(简称熵)。熵定义为信息的期望值，对于待分类的事物，符号<script type="math/tex">x_i</script>的信息定义为
+<script type="math/tex">l(x_i) = - \text{log}_2p(x_i)</script>，其中<script type="math/tex">p(x_i)</script>为该分类的的概率。由这些分类构成的集合的熵 <script type="math/tex">H = -\Sigma_{i=1}^n p(x_i) \text{log}_2 p(x_i)</script> 。</p>
+
+<p>从物理意义上直观的讲，熵对应一个系统的混乱与不一致程度，熵越大，表明这个系统越混乱。
+信息增益刻画的是：熵的减少或者数据无序度的减少。</p>
+
+<p>ID3的一般思路是：</p>
+<ol>
+  <li>
+    <p>测量集合数据的熵</p>
+
+    <script type="math/tex; mode=display">H(D) = -\sum\limits_{k=1}^K \frac{|C_k|}{|D|} \text{log}_2 \frac{|C_k|}{|D|}</script>
+  </li>
+  <li>
+    <p>寻找最优方案(特征)划分数据集，即计算每个特征 <script type="math/tex">f_i</script> 对数据集 <script type="math/tex">D</script> 的经验条件熵</p>
+
+    <script type="math/tex; mode=display">H(D|f_i) = \sum\limits_{j=1}^n \frac{|D_j|}{|D|} H(D_j)</script>
+
+    <p>然后使用可得最大信息增益的特征 <script type="math/tex">f_i</script> 对数据集进行划分</p>
+
+    <script type="math/tex; mode=display">f_\text{best} = \underset{f_i}{\arg \max} \ g(D, f_i) = \underset{f_1}{\arg \max} \ (g(D) - g(D|f_i))</script>
+  </li>
+  <li>
+    <p>对子集进行递归划分直到子集中所有数据属于同一个分类，或者特征耗尽</p>
+  </li>
+</ol>
+
+<h3 id="gini-index-or-information-gain">Gini Index or Information Gain</h3>
+<p>信息增益通过求和<strong>分类概率与概率的对数(底为2)的乘积</strong>来计算，此方式倾向于选择属性值较多的特征。 
+Gini 系数通过减去每个类别概率平方的和来计算，it favors larger partitions (????)。 
+Gini 系数代表了模型的不纯度，基尼系数越小，则不纯度越低，特征越好。 具体的，假设有 <script type="math/tex">K</script> 个类别，第 <script type="math/tex">k</script> 个类别的概率为 <script type="math/tex">p_k</script>， 则基尼系数的表达式为：</p>
+
+<script type="math/tex; mode=display">\text{Gini}(p) = \sum\limits_{k=1}^K p_k (1-p_k) = 1 - \sum\limits_{k=1}^K p_k^2</script>
+
+<p>那么对于样本 <script type="math/tex">D</script>，有 <script type="math/tex">K</script> 个类别，第 <script type="math/tex">k</script> 个类别的数量为 <script type="math/tex">C_k</script>， 则样本 <script type="math/tex">D</script> 的基尼系数的表达式为：</p>
+
+<script type="math/tex; mode=display">\text{Gini}(D) = 1 - \sum\limits_{k=1}^K (\frac{|C_k|}{|D|})^2</script>
+
+<p>特别的，对于样本 <script type="math/tex">D</script>，如果根据特征 <script type="math/tex">f</script> 的某个值，把 <script type="math/tex">D</script> 分成 <script type="math/tex">D_1</script> 和 <script type="math/tex">D_2</script> 两部分，则在特征 <script type="math/tex">f</script> 的条件下，<script type="math/tex">D</script> 的基尼系数表达式为：</p>
+
+<script type="math/tex; mode=display">\text{Gini}(D, f) = \frac{|D_1|}{|D|} \text{Gini}(D_1) + \frac{|D_2|}{|D|} \text{Gini}(D_2)</script>
+
+<p><a href="https://www.cnblogs.com/pinard/p/6053344.html">TODO</a></p>
+
+<h3 id="id3-python-implementation">ID3 Python Implementation</h3>
+
+<p><a href="/codes/decision_tree.py.txt">Deicision-Tree-ID3-Python3</a></p>
+
+<p>ID3 的缺陷：</p>
+<ol>
+  <li>数据集不够大时，很容易过拟合</li>
+  <li>每次只能考察一个特征来作决策</li>
+  <li>无数处理(连续)的数值特征及缺失值</li>
+</ol>
+
+<h2 id="c45">C4.5</h2>
+<p>C4.5 由 Ross Quinlan 于1993年提出对 ID3 算法的扩展。ID3 采用的信息增益度量存在一个内在偏置，它优先选择有较多属性值的特征，因为属性值多的特征可能会有相对较大的信息增益 (信息增益反映的给定一个条件以后不确定性减少的程度，数据集分得越细，确定性越高。相对的，条件熵越小，信息增益越大)。 避免这个不足的一个度量就是不用信息增益来选择 feature，而是用信息增益比率(gain ratio)，增益比率通过引入一个被称作分裂信息(split information)的项来惩罚取值较多的 feature， 分裂信息用来衡量 feature 分裂数据的广度和均匀性:</p>
+
+<script type="math/tex; mode=display">\text{SI}(D, f) =  -\sum\limits_{i=1}^n \frac{|D_i|}{|D|} \text{log}_2 \frac{|D_i|}{|D|}</script>
+
+<script type="math/tex; mode=display">\text{GR}(D, f) = \frac{g(D, f)}{\text{SI}(D, f)}</script>
+
+<p>where SI stands for Split Information, and GR for Gain Ratio.</p>
+
+<h3 id="id3-vs-c45">ID3 VS. C4.5</h3>
+<p>C4.5 是 ID3 算法的扩展。</p>
+
+<!-- 1. ID3 uses information gain whereas C4.5 uses gain ratio for splitting.  -->
+<ol>
+  <li>ID3 使用信息增益，而 C4.5 使用增益比率</li>
+  <li>ID3 每次划分分组时都会消耗特征，即划分数据分组之后特征数目会减少，而C4.5 &amp; CART并不总是消耗特征</li>
+  <li>TODO</li>
+</ol>
+
+<p>C4.5 较 ID3 的优势
+<!-- 1. accepts both continuous and discrete features --></p>
+<ol>
+  <li>可以处理连续属性值
+<!-- 2. handles incomplete data points;  --></li>
+  <li>可以处理缺失值
+    <ul>
+      <li>丢弃存在缺失值的样本</li>
+      <li>补上该属性的均值或者频率最高的值
+<!-- 3. solves over-fitting problem by (very clever) bottom-up technique usually known as "pruning";  --></li>
+    </ul>
+  </li>
+  <li>通过预剪枝来解决过拟合问题
+<!-- 4. different weights can be applied the features that comprise the training data. --></li>
+</ol>
+
+<h1 id="cart">CART</h1>
+<p>CART, Classification And Regression Trees, 分类决策树。</p>
+
+<p>优点，可以对复杂和非线性的数据建模；缺点是，结果不易理解。</p>
+
+<p>CART 采用二元切分来处理连续型变量，即每次把数据集切成两份，如果数据的某特征值大于切分所要求的值，那么这些数据就进入树的左子树，反之进入树的右子树。</p>
+
+<p>如何度量连续型数值的不一致度？首先计算所有数据的均值，然后计算每条数据的值到均值的差值(绝对值或者平方值)。</p>
+
+<p>采用 Gini 系统来划分属性。</p>
+
+<h1 id="小结">小结</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">算法</th>
+      <th style="text-align: left">支持模型</th>
+      <th style="text-align: left">特征选择方法</th>
+      <th style="text-align: left">连续值处理</th>
+      <th style="text-align: left">缺失值处理</th>
+      <th style="text-align: left">剪枝</th>
+      <th style="text-align: left">树结构</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">ID3</td>
+      <td style="text-align: left">分类</td>
+      <td style="text-align: left">信息增益</td>
+      <td style="text-align: left">No</td>
+      <td style="text-align: left">No</td>
+      <td style="text-align: left">No</td>
+      <td style="text-align: left">多叉树</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">C4.5</td>
+      <td style="text-align: left">分类</td>
+      <td style="text-align: left">信息增益比</td>
+      <td style="text-align: left">Yes</td>
+      <td style="text-align: left">Yes</td>
+      <td style="text-align: left">Yes</td>
+      <td style="text-align: left">多叉树</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">CART</td>
+      <td style="text-align: left">分类，回归</td>
+      <td style="text-align: left">基尼系数，均方差</td>
+      <td style="text-align: left">Yes</td>
+      <td style="text-align: left">Yes</td>
+      <td style="text-align: left">Yes</td>
+      <td style="text-align: left">二叉树</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>算法不足之处：</p>
+
+<ol>
+  <li>无论是 ID3, C4.5 还是 CART，在做特征选择的时候都是选择最优的一个特征来做分类决策，但有时候分类决策由一组特征来决定，得到的决策树会更加准确。这类决策树叫做<strong>多变量决策树(multi-variate decision tree)</strong>。在选择最优特征的时候，多变量决策树不是选择某一个最优特征，而是选择最优的一个特征线性组合来做决策。代表算法 OC1。</li>
+</ol>
+
+  </div>
+
+  <hr>
+  <p style="font-family: 'Times New Roman', Times, serif;" align='right'>
+    Sharing is caring  
+  <a href="https://twitter.com/intent/tweet?text=Decision Trees&url=http://localhost:4000/archives/decision_trees.html" title="Share on Twitter" rel="nofollow" target="_blank"> <img src="/images/logos/twitterlogo.png" width="50px"> </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=http://localhost:4000/archives/decision_trees.html" title="Share on Facebook" target="_blank"> <img src="/images/logos/facebook-logo2.png" width="50px"> </a>
+  <a href="http://service.weibo.com/share/share.php?url=http://localhost:4000/archives/decision_trees.html&appkey=&title=Decision Trees&pic=&ralateUid=&language=zh_cn" title="Share on weibo" rel="nofollow" target="_blank"> <img src="/images/logos/weibo-logo2.jpg" width="50px"> </a>
+  </p>
+
+  <p align="right" style="font-family: 'Times New Roman', Times, serif;">Contact me 
+    <a href="mailto:deepccccat@aol.com"> 
+    <img src="/images/logos/mail-logo.png" width="50px">
+    </a></p><a class="u-url" href="/archives/decision_trees.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <!-- <h2 class="footer-heading">Not a Blog</h2> -->
+    <!-- <h3 class="footer-heading"> 
+      $$\text{A deep learning enthusiast, who believes in the power of AI} $$
+      $$\text{ and the ethics of humankind.} $$
+    </h3> -->
+    <h3 style="font-family: 'Times New Roman', Times, serif; color: gray;" >
+      Find the things that really motivate you, and pursue then uncompromisingly.
+      Great work only comes when you are doing things that genuinely excite you.
+      <!-- A deep learning enthusiast, who believes in the power of AI and the ethics of humankind. -->
+    </h3>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name"></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/117ami"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username" style="font-family: 'Times New Roman'"> @R2FsCg </span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer><script src="/scripts/common.js?t=20191227203745"></script>
+
+  
+
+  </body>
+</html>

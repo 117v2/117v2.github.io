@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-12-27T20:37:45+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Not a Blog</title><author><name></name></author><entry><title type="html">Perl One-Liners</title><link href="http://localhost:4000/archives/Perl-One-Liners.html" rel="alternate" type="text/html" title="Perl One-Liners" /><published>2019-12-27T00:00:00+08:00</published><updated>2019-12-27T00:00:00+08:00</updated><id>http://localhost:4000/archives/Perl-One-Liners</id><content type="html" xml:base="http://localhost:4000/archives/Perl-One-Liners.html">&lt;p&gt;No.1: 查看帮助 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -h&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;basic&quot;&gt;Basic&lt;/h2&gt;
+&lt;p&gt;基本格式 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -&amp;lt;flags&amp;gt; 'codes'&lt;/code&gt;，常用 flags :&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-n&lt;/code&gt;，逐行处理，等于程序中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;while(&amp;lt;&amp;gt;){..loop..}&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-e&lt;/code&gt;，short for ‘execute’，即直接运行程序，one-line code 必备。注：&lt;code class=&quot;highlighter-rouge&quot;&gt;e&lt;/code&gt; 必须放在所有其他 flags 的最后面，不然程序不会执行&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-E&lt;/code&gt;，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;-e&lt;/code&gt; 的基础上激活所特性，比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;say&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-l&lt;/code&gt;，任意输出后添加新的一行 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -le 'print qq/Hello/&lt;/code&gt; 等于 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -e 'print qq/Hello\n/'&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-p&lt;/code&gt;，输出一行，前提 &lt;code class=&quot;highlighter-rouge&quot;&gt;-n&lt;/code&gt; 已打开。比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -npe '' abc.txt&lt;/code&gt; 将逐行输出文本&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;有时候输出字符串需要加上双引号，比如, &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -e 'print &quot;Hello one-liner&quot;&lt;/code&gt;。如果不想输入双引号(毕竟要按两次 shift)，可以使用 Perl 独有的表示方式 &lt;code class=&quot;highlighter-rouge&quot;&gt;q/string/&lt;/code&gt; (&lt;code class=&quot;highlighter-rouge&quot;&gt;q&lt;/code&gt; stards for quote, &lt;code class=&quot;highlighter-rouge&quot;&gt;qq&lt;/code&gt; for double quote)。然后就可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -e 'print qq/Hello one-liner/&lt;/code&gt; 来输出字符串了。&lt;/p&gt;
+
+&lt;h2 id=&quot;intermediated-tricks&quot;&gt;Intermediated tricks&lt;/h2&gt;
+&lt;h3 id=&quot;切割字符串&quot;&gt;切割字符串&lt;/h3&gt;
+
+&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;-a&lt;/code&gt; 来自动分割每一行 (like &lt;code class=&quot;highlighter-rouge&quot;&gt;awk&lt;/code&gt;)，将 &lt;code class=&quot;highlighter-rouge&quot;&gt;$_&lt;/code&gt; 切分为数组 &lt;code class=&quot;highlighter-rouge&quot;&gt;@F&lt;/code&gt;， 默认以空格做为分割符。如果需要指定其他分割符，比如冒号 &lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt; ，使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;-F:&lt;/code&gt; flag 。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cat &lt;/span&gt;abc.txt | perl &lt;span class=&quot;nt&quot;&gt;-anE&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'say $F[0]'&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# = cat abc.txt | awk '{print $1}'&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cat&lt;/span&gt; /etc/passwd | perl &lt;span class=&quot;nt&quot;&gt;-al&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-F&lt;/span&gt;: &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'say $F[2], $F[0]'&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;-m-加载模块&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-M&lt;/code&gt; 加载模块&lt;/h3&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;perl &lt;span class=&quot;nt&quot;&gt;-MLWP&lt;/span&gt;::Simple &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'getprint xxx'&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# = perl -e 'using LWP::Simple; getprint ...'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;选择性输出&quot;&gt;选择性输出&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;打印行数
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;perl &lt;span class=&quot;nt&quot;&gt;-ne&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'print &quot;$. $_&quot;'&lt;/span&gt; abc.txt &lt;span class=&quot;c&quot;&gt;# print lines preceded by line numbers, eq cat -n abc.txt&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;输出第一行 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print; exit'&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;输出前 10 行 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print if $. &amp;lt;= 10' abc.txt&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;输出最后 1 行 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print if eof' abc.txt&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;输出特定几行 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print if grep $. == $_, (11,13,19)' abc.txt&lt;/code&gt;。注: smartmatch &lt;code class=&quot;highlighter-rouge&quot;&gt;~~&lt;/code&gt; 不再推荐使用&lt;/li&gt;
+  &lt;li&gt;输出连续数行 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print if 11..30' abc.txt&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;正则输出  &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print if /^foo/' abc.txt&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;正则输出并统计行数 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -ne 'print qq/$c $_/ if /^foo/ and ++$c' abc.tx&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;翻转文本所有内容 &lt;code class=&quot;highlighter-rouge&quot;&gt;perl -e 'print reverse &amp;lt;&amp;gt;' abc.txt&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><category term="perl" /><summary type="html">No.1: 查看帮助 perl -h</summary></entry><entry><title type="html">Morris Traversal</title><link href="http://localhost:4000/archives/Morris-Traversal.html" rel="alternate" type="text/html" title="Morris Traversal" /><published>2019-12-18T00:00:00+08:00</published><updated>2019-12-18T00:00:00+08:00</updated><id>http://localhost:4000/archives/Morris-Traversal</id><content type="html" xml:base="http://localhost:4000/archives/Morris-Traversal.html">&lt;p&gt;To traverse a given a tree &lt;script type=&quot;math/tex&quot;&gt;T&lt;/script&gt;, one of most intuitive and popular way is using &lt;strong&gt;stack and recursion&lt;/strong&gt;. 
+This stack-based traversal has space complexity &lt;script type=&quot;math/tex&quot;&gt;O(\text{log}N)&lt;/script&gt;, where &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt; is the depth of tree.&lt;/p&gt;
+
+&lt;p&gt;Morris traversal is another way of traversing a tree, but requires only constant space. The idea behind it is &lt;strong&gt;trading time for memory&lt;/strong&gt;. The thought can be found the following procedure:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Start from root node, mark it as &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; node&lt;/li&gt;
+  &lt;li&gt;While &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; is not NULL
+    &lt;ul&gt;
+      &lt;li&gt;If the current node has no left child
+        &lt;ol&gt;
+          &lt;li&gt;Print current node’s value, &lt;code class=&quot;highlighter-rouge&quot;&gt;print(cur.val)&lt;/code&gt;&lt;/li&gt;
+          &lt;li&gt;Go to the right child, &lt;code class=&quot;highlighter-rouge&quot;&gt;cur = cur.right&lt;/code&gt;&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Else
+        &lt;ol&gt;
+          &lt;li&gt;Find the rightmost node &lt;code class=&quot;highlighter-rouge&quot;&gt;pre&lt;/code&gt; of current node’s left child, and make &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; the right node of it, &lt;code class=&quot;highlighter-rouge&quot;&gt;pre.next = cur&lt;/code&gt;&lt;/li&gt;
+          &lt;li&gt;Make &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt;’s left child as current node, &lt;code class=&quot;highlighter-rouge&quot;&gt;cur = cur.left&lt;/code&gt;&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;python-implementation-in-order-traversal&quot;&gt;Python implementation, in-order traversal&lt;/h3&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# Inorder tree traversal 
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;MorrisTraversal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;  
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; 
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+            &lt;span class=&quot;c1&quot;&gt;# Find the in-order predecessor of current 
+&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; 
+            &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; 
+   
+            &lt;span class=&quot;c1&quot;&gt;# Make current as right child of its in-order predecessor 
+&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; 
+                  
+            &lt;span class=&quot;c1&quot;&gt;# Revert the changes made in if part to restore the  
+&lt;/span&gt;            &lt;span class=&quot;c1&quot;&gt;# original tree i.e., fix the right child of predecessor 
+&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Notice that, the structure of the tree is modified during the traversal by the code block&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;pre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This block appends &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; to the rightmost node (&lt;code class=&quot;highlighter-rouge&quot;&gt;pre&lt;/code&gt;) of &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt;’s left child, such that we can still track back to &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; later. Once &lt;code class=&quot;highlighter-rouge&quot;&gt;pre&lt;/code&gt; is printed, we get &lt;code class=&quot;highlighter-rouge&quot;&gt;cur = pre.right = cur&lt;/code&gt;. And there is a circle here when we start from &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt;, go to its left child, and then go to right all the way until we meet &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; agin. At this time, &lt;code class=&quot;highlighter-rouge&quot;&gt;pre.right is not None&lt;/code&gt;, then we &lt;em&gt;cut the connection&lt;/em&gt; between &lt;code class=&quot;highlighter-rouge&quot;&gt;pre&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;cur&lt;/code&gt; by running &lt;code class=&quot;highlighter-rouge&quot;&gt;pre.right = None&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In the way, the tree will be reverted back to its original shape when the algorithm ends.&lt;/p&gt;
+
+&lt;h3 id=&quot;time-complexity&quot;&gt;Time complexity&lt;/h3&gt;
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;O(N)&lt;/script&gt;, as every node in the tree is traversed for at most three times.&lt;/p&gt;</content><author><name></name></author><category term="tree" /><summary type="html">To traverse a given a tree , one of most intuitive and popular way is using stack and recursion. This stack-based traversal has space complexity , where is the depth of tree.</summary></entry><entry><title type="html">Data Structures and Tricks in C++</title><link href="http://localhost:4000/archives/Data-Structures-and-Tricks-in-C++.html" rel="alternate" type="text/html" title="Data Structures and Tricks in C++" /><published>2019-11-27T00:00:00+08:00</published><updated>2019-11-27T00:00:00+08:00</updated><id>http://localhost:4000/archives/Data-Structures-and-Tricks-in-C++</id><content type="html" xml:base="http://localhost:4000/archives/Data-Structures-and-Tricks-in-C++.html">&lt;h2 id=&quot;整形&quot;&gt;整形&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;short&lt;/code&gt; 至少 16 位&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt; 至少和 short 一样长&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;long&lt;/code&gt; 至少 32 位，且至少和 &lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt; 一样长&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;long long&lt;/code&gt; 至少 64 位，且至少和 &lt;code class=&quot;highlighter-rouge&quot;&gt;long&lt;/code&gt; 一样长&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt; 并不总是 32 位，在老式 IBM PC 的实现中，&lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt; 的宽度为 16 位，而在 Windows XP、Windows Vista、Windows 7 及其他多个微型计算机中，为 32 位 (其中 long 也为 32 位)&lt;/p&gt;
+
+&lt;h2 id=&quot;long-vs-int64_t&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;long&lt;/code&gt; v.s. &lt;code class=&quot;highlighter-rouge&quot;&gt;int64_t&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;int64_t&lt;/code&gt; 一定可以保证是 64 位，但 &lt;code class=&quot;highlighter-rouge&quot;&gt;long&lt;/code&gt; 未必总是是 64 位。&lt;/p&gt;
+
+&lt;p&gt;另外关于在代码中使用如 &lt;code class=&quot;highlighter-rouge&quot;&gt;int16_t, int32_t, int64_t&lt;/code&gt; 这样精准、清晰的表示方式，还是简单的 &lt;code class=&quot;highlighter-rouge&quot;&gt;int, long&lt;/code&gt; ，没有较为统一的意见。&lt;/p&gt;
+
+&lt;p&gt;个人观点：simple is better 。 如果没有充足的理由非得使用刚好 32 或者 62 位的变量，还是建议直接使用较为通用的声明方式。&lt;/p&gt;
+
+&lt;p&gt;支持 &lt;code class=&quot;highlighter-rouge&quot;&gt;int64_t&lt;/code&gt; 类型的编译器必然支持 &lt;code class=&quot;highlighter-rouge&quot;&gt;long long&lt;/code&gt;，但 pre-C++ 2011 的编译器不支持 &lt;code class=&quot;highlighter-rouge&quot;&gt;int64_t&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;size_t-vs-int&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;size_t&lt;/code&gt; v.s. &lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;size_t&lt;/code&gt; 的真实类型与操作系统有关，其取值范围是目标平台下最大可能的数组尺寸。&lt;/p&gt;
+
+&lt;p&gt;在32位架构中被普遍定义为：&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;而在64位架构中被定义为：&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;size_t在32位架构上是4字节，在64位架构上是8字节。&lt;/p&gt;
+
+&lt;p&gt;一般来说，在表示数据结构大小的时候，尽量使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;size_t&lt;/code&gt; 。原因，1. 代码表述清晰，一眼就可以看出这是在表示一个对象的长度 ； 2. 表示范围比 &lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt; 要大，特别是表示 vector 或者其他 container 的长度时 &lt;code class=&quot;highlighter-rouge&quot;&gt;size_t&lt;/code&gt; 可以确保不出出现溢出等问题。&lt;/p&gt;
+
+&lt;h2 id=&quot;随机&quot;&gt;随机&lt;/h2&gt;
+&lt;p&gt;生成随机浮点数&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;random_device&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+&lt;span class=&quot;n&quot;&gt;mt19937&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;uniform_real_distribution&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lower_bound&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;upper_bound&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_double&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;字符串&quot;&gt;字符串&lt;/h2&gt;
+&lt;h3 id=&quot;字符转化为字符串的-9-种方式&quot;&gt;字符转化为字符串的 9 种方式&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;char c = 'a'; string s (1,c);&lt;/code&gt;，类构造器 &lt;code class=&quot;highlighter-rouge&quot;&gt;string(size_t n, char c)&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;char c = 'a'; string s; stringstream ss; ss &amp;lt;&amp;lt; c; ss &amp;gt;&amp;gt; s; &lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;string s; s.push_back(c); &lt;/code&gt; ，使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;push_back&lt;/code&gt; 方法&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;s += c;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;string s; s = c; &lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;s.append(1, c);&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;append(size_t n, char c)&lt;/code&gt; 添加 &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; 个字符&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;s.assign(1, c);&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;s.insert(0, 1, c);&lt;/code&gt; ，&lt;code class=&quot;highlighter-rouge&quot;&gt;insert(site_t pos, site_t n, char c)&lt;/code&gt; 在位置 &lt;code class=&quot;highlighter-rouge&quot;&gt;pos&lt;/code&gt; 插入 &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; 个字符&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;s.replace(0, 1, 1, c);&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;replace(size_t pos, site_t len, site_t n, char c)&lt;/code&gt; 从位置 &lt;code class=&quot;highlighter-rouge&quot;&gt;pos&lt;/code&gt; 开始，用 &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; 个字符 &lt;code class=&quot;highlighter-rouge&quot;&gt;c&lt;/code&gt; 替换长度为 &lt;code class=&quot;highlighter-rouge&quot;&gt;len&lt;/code&gt; 的部分&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;数据结构&quot;&gt;数据结构&lt;/h1&gt;
+&lt;h2 id=&quot;bitset&quot;&gt;bitset&lt;/h2&gt;
+&lt;p&gt;区别于 vector, array，bitset 索引&lt;strong&gt;从右向左&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;初始化方法&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;100011&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;bitset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ba&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// generate [0, 0, 1, 0, 0, 0, 1, 1]&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// string from position 2 till end &lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bitset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bit_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;      &lt;span class=&quot;c1&quot;&gt;// [0, 0, 0, 0, 0, 0, 1, 1] &lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// string from position 2 till next 3 positions &lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bitset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bit_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;// [0, 0, 0, 0, 0, 0, 0, 1] &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;函数&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;count()&lt;/code&gt;, 返回 ture 的个数&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;size()&lt;/code&gt;, 大小&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;any() | all()&lt;/code&gt;, 存在或者所有单位为 true&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;set()&lt;/code&gt;, 重置所有单元为 true&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;set(3)&lt;/code&gt;, 置第 4 个单元为 true&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;set(3, 0)&lt;/code&gt;, 置第 4 个单元为 false&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;reset()&lt;/code&gt;, 重置所有单元为 false&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;flip()&lt;/code&gt;, 反转单元值&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;示例&quot;&gt;示例&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/partition-equal-subset-sum/description/&quot;&gt;子集合划分&lt;/a&gt;: 给定一个集合 &lt;script type=&quot;math/tex&quot;&gt;S&lt;/script&gt; ，是否可以将其分两个子集合使得其和相等？更一般的，给定一个整数 &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt;，能否找到一个子集体 &lt;script type=&quot;math/tex&quot;&gt;T \subseteq \text{s.t.,} \sum T = N&lt;/script&gt; ?&lt;/p&gt;
+
+&lt;p&gt;bitset 解法：&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;can_partition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;bitset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10001&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;bits&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bits&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;普通的 DP(dynamic programming) 解法&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;can_partition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;accumulate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nxtdp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nxtdp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nxtd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nxtdp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;其中 &lt;code class=&quot;highlighter-rouge&quot;&gt;dp[i]&lt;/code&gt; 表示能否从集合中得到一个子集合，使得其和为 &lt;code class=&quot;highlighter-rouge&quot;&gt;i&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;算法的思想是，假设 &lt;code class=&quot;highlighter-rouge&quot;&gt;dp&lt;/code&gt; 为前 m 个元素可能构成的子集合再取和的所有情况，考虑第 m+1 个元素 &lt;script type=&quot;math/tex&quot;&gt;S[m]&lt;/script&gt;，如果 dp[287] = true (即&lt;script type=&quot;math/tex&quot;&gt;\exists T \subseteq S[:m] \text{s.t., } \sum T = 287&lt;/script&gt;)，那么 dp[287+&lt;script type=&quot;math/tex&quot;&gt;S[m]&lt;/script&gt;] = true 。&lt;/p&gt;
+
+&lt;p&gt;bitset 的解法本质上是利用 &lt;strong&gt;bitset 代替 DP(dynamic programming) 表格，用位运算取代 DP 的迭代过程&lt;/strong&gt;。 
+bits[i] 与 dp[i] 表示的意义一致。&lt;/p&gt;
+
+&lt;p&gt;Tiny example, S = [2, 3, 4], bits 初始为 1 ， 迭代如下:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;n = 2, bits = 101 ， 表示集合 &lt;script type=&quot;math/tex&quot;&gt;\{2\}&lt;/script&gt; 可构成 0, 2&lt;/li&gt;
+  &lt;li&gt;n = 3, bits = 101101 ， 表示集合 &lt;script type=&quot;math/tex&quot;&gt;\{2, 3\}&lt;/script&gt; 可构成 0, 2, 3, 5&lt;/li&gt;
+  &lt;li&gt;n = 4, bits = 1011111101 ， 表示集合 &lt;script type=&quot;math/tex&quot;&gt;\{2, 3, 4\}&lt;/script&gt; 可构成 0, 2, 3, 4, 5, 6, 7, 9&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;注：&lt;/strong&gt; 算法中 &lt;code class=&quot;highlighter-rouge&quot;&gt;bitset&amp;lt;10001&amp;gt;&lt;/code&gt; 大小为 10001 是因为原问题中集合大小限制在 200，元数大小限制在 100，因此我们的 target 不太于 10000 。&lt;/p&gt;
+
+&lt;!-- TODO --&gt;
+&lt;h1 id=&quot;standard-template-library-stl&quot;&gt;Standard Template Library (STL)&lt;/h1&gt;
+
+&lt;h2 id=&quot;map&quot;&gt;Map&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; v.s., &lt;code class=&quot;highlighter-rouge&quot;&gt;unordered_map&lt;/code&gt;&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;unordered_map&lt;/code&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;元素存在顺序&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;YES&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;NO&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;实现&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;自平衡BST&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;哈希表&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;查找时间&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;script type=&quot;math/tex&quot;&gt;\text{log}(n)&lt;/script&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;平均 &lt;script type=&quot;math/tex&quot;&gt;O(1)&lt;/script&gt; / 最坏 &lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;插入时间&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;script type=&quot;math/tex&quot;&gt;\text{log}(n)&lt;/script&gt; + 平衡时间&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;平均 &lt;script type=&quot;math/tex&quot;&gt;O(1)&lt;/script&gt; / 最坏 &lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;删除时间&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;script type=&quot;math/tex&quot;&gt;\text{log}(n)&lt;/script&gt; + 平衡时间&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;平均 &lt;script type=&quot;math/tex&quot;&gt;O(1)&lt;/script&gt; / 最坏 &lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</content><author><name></name></author><category term="cpp" /><category term="data structure" /><summary type="html">整形 short 至少 16 位 int 至少和 short 一样长 long 至少 32 位，且至少和 int 一样长 long long 至少 64 位，且至少和 long 一样长</summary></entry><entry><title type="html">Data Structures in Python</title><link href="http://localhost:4000/archives/Data-Structures-in-Python.html" rel="alternate" type="text/html" title="Data Structures in Python" /><published>2019-11-26T00:00:00+08:00</published><updated>2019-11-26T00:00:00+08:00</updated><id>http://localhost:4000/archives/Data-Structures-in-Python</id><content type="html" xml:base="http://localhost:4000/archives/Data-Structures-in-Python.html">&lt;h1 id=&quot;heapq&quot;&gt;Heapq&lt;/h1&gt;
+
+&lt;p&gt;Heap data structure is mainly used to represent a priority queue. 
+The property of this data structure in Python is that each time the &lt;strong&gt;smallest of heap element is popped(min heap)&lt;/strong&gt;. Whenever elements are pushed or popped, &lt;strong&gt;heap structure in maintained&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;methods&quot;&gt;Methods&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;heapify(iterable)&lt;/code&gt;, convert the iterable into a heap data structure&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;heappush(heap, element)&lt;/code&gt;, insert &lt;code class=&quot;highlighter-rouge&quot;&gt;element&lt;/code&gt; in to &lt;code class=&quot;highlighter-rouge&quot;&gt;heap&lt;/code&gt;, and maintain the heap invariant&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;heappop(heap)&lt;/code&gt;, remove and return the smallest element&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;heappushpop(heap, item)&lt;/code&gt;, combine the functioning of both push and pop in one statement, push first and pop later&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;heapreplace(heap, item)&lt;/code&gt;, combine the functioning of both pop and push in one statement, pop first and push later&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;nlargest(k, iterable, key = fun)&lt;/code&gt; return the k largest elements from the iterable specified and satisfying the 
+key if mentioned.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;nsmallest(k, iterable, key = fun)&lt;/code&gt; return the k smallest elements from the iterable specified and satisfying the&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Examples:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;heapq&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;alist&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;heap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heapify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# converts list into heap 3, 7
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heappush&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# pushes number 2.
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nlargest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# produces [7, 3]
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;heap&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;item&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;heapq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heappush&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;ordered&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ordered&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heapq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heappop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordered&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;priorityqueue-implementation&quot;&gt;PriorityQueue Implementation&lt;/h2&gt;
+&lt;p&gt;Sometimes, it would be convenient to customize your own Priority Queue with different methods. 
+A naive implementation of PQ can be found &lt;a href=&quot;/codes/pq.py.txt&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Note that, the complexity of &lt;code class=&quot;highlighter-rouge&quot;&gt;push&lt;/code&gt; method of this PQ is &lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt; while &lt;code class=&quot;highlighter-rouge&quot;&gt;heapq.heappush&lt;/code&gt; is &lt;script type=&quot;math/tex&quot;&gt;O(\text{log}(n))&lt;/script&gt;. 
+But the &lt;code class=&quot;highlighter-rouge&quot;&gt;pop&lt;/code&gt; method is faster that &lt;code class=&quot;highlighter-rouge&quot;&gt;heapq.heappop&lt;/code&gt;, since the former is &lt;script type=&quot;math/tex&quot;&gt;O(1)&lt;/script&gt; while the latter is &lt;script type=&quot;math/tex&quot;&gt;O(\text{log}(n))&lt;/script&gt;.&lt;/p&gt;</content><author><name></name></author><category term="Python3" /><category term="data structure" /><summary type="html">Heapq</summary></entry><entry><title type="html">Decision Trees</title><link href="http://localhost:4000/archives/Decision-Trees.html" rel="alternate" type="text/html" title="Decision Trees" /><published>2019-11-25T00:00:00+08:00</published><updated>2019-11-25T00:00:00+08:00</updated><id>http://localhost:4000/archives/Decision-Trees</id><content type="html" xml:base="http://localhost:4000/archives/Decision-Trees.html">&lt;h1 id=&quot;decision-trees&quot;&gt;Decision Trees&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据&lt;/li&gt;
+  &lt;li&gt;可能会过拟合&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;决策树的学习通常分为三部分:特征选择,决策树的生成和决策树的剪枝.&lt;/p&gt;
+
+&lt;h2 id=&quot;id3&quot;&gt;ID3&lt;/h2&gt;
+&lt;p&gt;Iternative Dichotomizer 3, 由 Ross Quinlan (Quinlan, J. R. 1986.  Induction of Decision Trees. Mach. Learn. 1, 1 (Mar. 1986), 81-106.) 在1986年提出。&lt;/p&gt;
+
+&lt;p&gt;ID3 决策树可以有多个分支，但是不能处理特征值为连续的情况。决策树是一种贪心算法，每次选取的分割数据的特征都是当前的最佳选择，并不关心是否达到全局最优。在 ID3 中，每次根据&lt;strong&gt;最大信息熵增益&lt;/strong&gt;选取当前最佳的特征来分割数据，并按照该特征的所有取值来切分，也就是说如果一个特征有3种取值，数据将被切分3份，一旦按某特征切分后，该特征在之后的算法执行中，将不再起作用。&lt;/p&gt;
+
+&lt;p&gt;划分数据集的大原则是：&lt;strong&gt;将无序的数据变得更加有序&lt;/strong&gt;。ID3使用&lt;strong&gt;信息增益&lt;/strong&gt;(数据集划分前后信息发生的变化)的方法来划分。
+要计算信息增益，我们需要一种度量集合信息的方式，比如香农熵(简称熵)。熵定义为信息的期望值，对于待分类的事物，符号&lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt;的信息定义为
+&lt;script type=&quot;math/tex&quot;&gt;l(x_i) = - \text{log}_2p(x_i)&lt;/script&gt;，其中&lt;script type=&quot;math/tex&quot;&gt;p(x_i)&lt;/script&gt;为该分类的的概率。由这些分类构成的集合的熵 &lt;script type=&quot;math/tex&quot;&gt;H = -\Sigma_{i=1}^n p(x_i) \text{log}_2 p(x_i)&lt;/script&gt; 。&lt;/p&gt;
+
+&lt;p&gt;从物理意义上直观的讲，熵对应一个系统的混乱与不一致程度，熵越大，表明这个系统越混乱。
+信息增益刻画的是：熵的减少或者数据无序度的减少。&lt;/p&gt;
+
+&lt;p&gt;ID3的一般思路是：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;测量集合数据的熵&lt;/p&gt;
+
+    &lt;script type=&quot;math/tex; mode=display&quot;&gt;H(D) = -\sum\limits_{k=1}^K \frac{|C_k|}{|D|} \text{log}_2 \frac{|C_k|}{|D|}&lt;/script&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;寻找最优方案(特征)划分数据集，即计算每个特征 &lt;script type=&quot;math/tex&quot;&gt;f_i&lt;/script&gt; 对数据集 &lt;script type=&quot;math/tex&quot;&gt;D&lt;/script&gt; 的经验条件熵&lt;/p&gt;
+
+    &lt;script type=&quot;math/tex; mode=display&quot;&gt;H(D|f_i) = \sum\limits_{j=1}^n \frac{|D_j|}{|D|} H(D_j)&lt;/script&gt;
+
+    &lt;p&gt;然后使用可得最大信息增益的特征 &lt;script type=&quot;math/tex&quot;&gt;f_i&lt;/script&gt; 对数据集进行划分&lt;/p&gt;
+
+    &lt;script type=&quot;math/tex; mode=display&quot;&gt;f_\text{best} = \underset{f_i}{\arg \max} \ g(D, f_i) = \underset{f_1}{\arg \max} \ (g(D) - g(D|f_i))&lt;/script&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;对子集进行递归划分直到子集中所有数据属于同一个分类，或者特征耗尽&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;gini-index-or-information-gain&quot;&gt;Gini Index or Information Gain&lt;/h3&gt;
+&lt;p&gt;信息增益通过求和&lt;strong&gt;分类概率与概率的对数(底为2)的乘积&lt;/strong&gt;来计算，此方式倾向于选择属性值较多的特征。 
+Gini 系数通过减去每个类别概率平方的和来计算，it favors larger partitions (????)。 
+Gini 系数代表了模型的不纯度，基尼系数越小，则不纯度越低，特征越好。 具体的，假设有 &lt;script type=&quot;math/tex&quot;&gt;K&lt;/script&gt; 个类别，第 &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; 个类别的概率为 &lt;script type=&quot;math/tex&quot;&gt;p_k&lt;/script&gt;， 则基尼系数的表达式为：&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\text{Gini}(p) = \sum\limits_{k=1}^K p_k (1-p_k) = 1 - \sum\limits_{k=1}^K p_k^2&lt;/script&gt;
+
+&lt;p&gt;那么对于样本 &lt;script type=&quot;math/tex&quot;&gt;D&lt;/script&gt;，有 &lt;script type=&quot;math/tex&quot;&gt;K&lt;/script&gt; 个类别，第 &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; 个类别的数量为 &lt;script type=&quot;math/tex&quot;&gt;C_k&lt;/script&gt;， 则样本 &lt;script type=&quot;math/tex&quot;&gt;D&lt;/script&gt; 的基尼系数的表达式为：&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\text{Gini}(D) = 1 - \sum\limits_{k=1}^K (\frac{|C_k|}{|D|})^2&lt;/script&gt;
+
+&lt;p&gt;特别的，对于样本 &lt;script type=&quot;math/tex&quot;&gt;D&lt;/script&gt;，如果根据特征 &lt;script type=&quot;math/tex&quot;&gt;f&lt;/script&gt; 的某个值，把 &lt;script type=&quot;math/tex&quot;&gt;D&lt;/script&gt; 分成 &lt;script type=&quot;math/tex&quot;&gt;D_1&lt;/script&gt; 和 &lt;script type=&quot;math/tex&quot;&gt;D_2&lt;/script&gt; 两部分，则在特征 &lt;script type=&quot;math/tex&quot;&gt;f&lt;/script&gt; 的条件下，&lt;script type=&quot;math/tex&quot;&gt;D&lt;/script&gt; 的基尼系数表达式为：&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\text{Gini}(D, f) = \frac{|D_1|}{|D|} \text{Gini}(D_1) + \frac{|D_2|}{|D|} \text{Gini}(D_2)&lt;/script&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/pinard/p/6053344.html&quot;&gt;TODO&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;id3-python-implementation&quot;&gt;ID3 Python Implementation&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;/codes/decision_tree.py.txt&quot;&gt;Deicision-Tree-ID3-Python3&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ID3 的缺陷：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;数据集不够大时，很容易过拟合&lt;/li&gt;
+  &lt;li&gt;每次只能考察一个特征来作决策&lt;/li&gt;
+  &lt;li&gt;无数处理(连续)的数值特征及缺失值&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;c45&quot;&gt;C4.5&lt;/h2&gt;
+&lt;p&gt;C4.5 由 Ross Quinlan 于1993年提出对 ID3 算法的扩展。ID3 采用的信息增益度量存在一个内在偏置，它优先选择有较多属性值的特征，因为属性值多的特征可能会有相对较大的信息增益 (信息增益反映的给定一个条件以后不确定性减少的程度，数据集分得越细，确定性越高。相对的，条件熵越小，信息增益越大)。 避免这个不足的一个度量就是不用信息增益来选择 feature，而是用信息增益比率(gain ratio)，增益比率通过引入一个被称作分裂信息(split information)的项来惩罚取值较多的 feature， 分裂信息用来衡量 feature 分裂数据的广度和均匀性:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\text{SI}(D, f) =  -\sum\limits_{i=1}^n \frac{|D_i|}{|D|} \text{log}_2 \frac{|D_i|}{|D|}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\text{GR}(D, f) = \frac{g(D, f)}{\text{SI}(D, f)}&lt;/script&gt;
+
+&lt;p&gt;where SI stands for Split Information, and GR for Gain Ratio.&lt;/p&gt;
+
+&lt;h3 id=&quot;id3-vs-c45&quot;&gt;ID3 VS. C4.5&lt;/h3&gt;
+&lt;p&gt;C4.5 是 ID3 算法的扩展。&lt;/p&gt;
+
+&lt;!-- 1. ID3 uses information gain whereas C4.5 uses gain ratio for splitting.  --&gt;
+&lt;ol&gt;
+  &lt;li&gt;ID3 使用信息增益，而 C4.5 使用增益比率&lt;/li&gt;
+  &lt;li&gt;ID3 每次划分分组时都会消耗特征，即划分数据分组之后特征数目会减少，而C4.5 &amp;amp; CART并不总是消耗特征&lt;/li&gt;
+  &lt;li&gt;TODO&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;C4.5 较 ID3 的优势
+&lt;!-- 1. accepts both continuous and discrete features --&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;可以处理连续属性值
+&lt;!-- 2. handles incomplete data points;  --&gt;&lt;/li&gt;
+  &lt;li&gt;可以处理缺失值
+    &lt;ul&gt;
+      &lt;li&gt;丢弃存在缺失值的样本&lt;/li&gt;
+      &lt;li&gt;补上该属性的均值或者频率最高的值
+&lt;!-- 3. solves over-fitting problem by (very clever) bottom-up technique usually known as &quot;pruning&quot;;  --&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;通过预剪枝来解决过拟合问题
+&lt;!-- 4. different weights can be applied the features that comprise the training data. --&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;cart&quot;&gt;CART&lt;/h1&gt;
+&lt;p&gt;CART, Classification And Regression Trees, 分类决策树。&lt;/p&gt;
+
+&lt;p&gt;优点，可以对复杂和非线性的数据建模；缺点是，结果不易理解。&lt;/p&gt;
+
+&lt;p&gt;CART 采用二元切分来处理连续型变量，即每次把数据集切成两份，如果数据的某特征值大于切分所要求的值，那么这些数据就进入树的左子树，反之进入树的右子树。&lt;/p&gt;
+
+&lt;p&gt;如何度量连续型数值的不一致度？首先计算所有数据的均值，然后计算每条数据的值到均值的差值(绝对值或者平方值)。&lt;/p&gt;
+
+&lt;p&gt;采用 Gini 系统来划分属性。&lt;/p&gt;
+
+&lt;h1 id=&quot;小结&quot;&gt;小结&lt;/h1&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;算法&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;支持模型&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;特征选择方法&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;连续值处理&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;缺失值处理&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;剪枝&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;树结构&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;ID3&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;分类&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;信息增益&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;多叉树&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;C4.5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;分类&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;信息增益比&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Yes&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Yes&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Yes&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;多叉树&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;CART&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;分类，回归&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;基尼系数，均方差&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Yes&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Yes&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Yes&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;二叉树&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;算法不足之处：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;无论是 ID3, C4.5 还是 CART，在做特征选择的时候都是选择最优的一个特征来做分类决策，但有时候分类决策由一组特征来决定，得到的决策树会更加准确。这类决策树叫做&lt;strong&gt;多变量决策树(multi-variate decision tree)&lt;/strong&gt;。在选择最优特征的时候，多变量决策树不是选择某一个最优特征，而是选择最优的一个特征线性组合来做决策。代表算法 OC1。&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><category term="decision tree" /><category term="supervised learning" /><summary type="html">Decision Trees 计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据 可能会过拟合</summary></entry><entry><title type="html">Blog Materials</title><link href="http://localhost:4000/archives/Blog-Materials.html" rel="alternate" type="text/html" title="Blog Materials" /><published>2019-11-20T00:00:00+08:00</published><updated>2019-11-20T00:00:00+08:00</updated><id>http://localhost:4000/archives/Blog-Materials</id><content type="html" xml:base="http://localhost:4000/archives/Blog-Materials.html">&lt;p&gt;Boosting 与 bagging 区别联系
+自举汇聚法(bootstrap aggregating)，也称为Bagging ，是从原始数据集选择S次后得到S个新数据集的一种技术。&lt;/p&gt;
+
+&lt;p&gt;Boosting 是一种与 bagging很类似的技术，但在boosting中，不同的分类器是通过串行训练而获得的，每个新分类器都根据已经训练出来的分类器的性能来进行训练。boosting是通过集中关注被已有分类器错分的那些数据来获得新的分类器。 
+Bagging中的分类器权重是相等的，而boosting并不相等，每个权重代表的是其对应分类器在上一轮迭代中的成功度。&lt;/p&gt;
+
+&lt;p&gt;Boosting代表 AdaBoost, XGBoost&lt;/p&gt;
+
+&lt;h2 id=&quot;adaboost---自适应boosting&quot;&gt;AdaBoost - 自适应Boosting&lt;/h2&gt;
+&lt;h3 id=&quot;adaptive-boosting&quot;&gt;Adaptive boosting&lt;/h3&gt;
+&lt;p&gt;运行过程: 训练数据中的每一个样本，并赋予其一个权重。首先在训练数据上训练出一个弱分类器并计算该分类器的错误率&lt;script type=&quot;math/tex&quot;&gt;\epsilon = \frac{N_{\text{wrong}}}{N_\text{all}}&lt;/script&gt;，然后在同一数据集上再次训练弱分类器，在这次训练中，将会调整样本的权重，第一次分对的样本权重会降低，第一次分错的样本权重将会提高。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;基于单层决策树构建弱分类器。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;单层决策树(decision stump，也称决策树桩)是一棵只有一个根结点，两个叶子结点的简单决策树。 它是AdaBoost中最流行(并不是唯一)的弱分类器，&lt;/p&gt;
+
+&lt;h2 id=&quot;cart&quot;&gt;CART&lt;/h2&gt;
+&lt;p&gt;CART, Classification And Regression Trees, 分类决策树。优点，可以对复杂和非线性的数据建模；缺点是，结果不易理解。&lt;/p&gt;
+
+&lt;p&gt;CART 采用二元切分来处理连续型变量，即每次把数据集切成两份，如果数据的某特征值大于切分所要求的值，那么这些数据就进入树的左子树，反之进入树的右子树。&lt;/p&gt;
+
+&lt;p&gt;如何度量连续型数值的不一致度？首先计算所有数据的均值，然后计算每条数据的值到均值的差值(绝对值或者平方值)。&lt;/p&gt;
+
+&lt;h2 id=&quot;decision-trees&quot;&gt;Decision Trees&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可能处理不相关特征数据&lt;/li&gt;
+  &lt;li&gt;可能会过拟合&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;id3&quot;&gt;ID3&lt;/h3&gt;
+&lt;p&gt;Iternative Dichotomizer, the first of three Decision Tree implementations developed by Ross Quinlan (Quinlan, J. R. 1986.  Induction of Decision Trees. Mach. Learn. 1, 1 (Mar. 1986), 81-106.)&lt;/p&gt;
+
+&lt;p&gt;ID3的一般思路是：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;测量集合数据的熵&lt;/li&gt;
+  &lt;li&gt;寻找最优方案(特征)划分数据集&lt;/li&gt;
+  &lt;li&gt;对子集进行递归划分直到子集中所有数据属于同一个分类，或者特征耗尽&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;划分数据集的大原则是：&lt;strong&gt;将无序的数据变得更加有序&lt;/strong&gt;。ID3使用&lt;strong&gt;信息增益&lt;/strong&gt;(数据集划分前后信息发生的变化)的方法来划分。&lt;/p&gt;
+
+&lt;p&gt;要计算信息增益，我们需要一种度量集合信息的方式，比如香农熵(简称熵)。熵定义为信息的期望值，对于待分类的事物，符号&lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt;的信息定义为
+&lt;script type=&quot;math/tex&quot;&gt;l(x_i) = - \text{log}_2p(x_i)&lt;/script&gt;，其中&lt;script type=&quot;math/tex&quot;&gt;p(x_i)&lt;/script&gt;为该分类的的概率。&lt;/p&gt;
+
+&lt;p&gt;由这些分类构成的集合的熵 &lt;script type=&quot;math/tex&quot;&gt;H = -\Sigma_{i=1}^n p(x_i) \text{log}_2 p(x_i)&lt;/script&gt; 。 从物理意义上直观的讲，熵对应一个系统的混乱与不一致程度，熵越大，表明这个系统越混乱。
+信息增益刻画的是：熵的减少或者数据无序度的减少。&lt;/p&gt;
+
+&lt;h3 id=&quot;gini-impurity&quot;&gt;Gini impurity&lt;/h3&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+
+&lt;h3 id=&quot;decision-tree-python-implementation&quot;&gt;Decision Tree Python Implementation&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;/codes/decision_tree.py.txt&quot;&gt;Deicision-Tree-ID3-Python3&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ID3 的缺陷：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;数据集不够大时，很容易过拟合&lt;/li&gt;
+  &lt;li&gt;每次只能考察一个特征来作决策&lt;/li&gt;
+  &lt;li&gt;无数处理(连续)的数值特征及缺失值&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;id3-vs-c45&quot;&gt;ID3 VS. C4.5&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;ID3 uses information gain whereas C4.5 uses gain ratio for splitting.&lt;/li&gt;
+  &lt;li&gt;ID3 每次划分分组时都会消耗特征，即划分数据分组之后特征数目会减少，而C4.5 &amp;amp; CART并不总是消耗特征&lt;/li&gt;
+  &lt;li&gt;TODO&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;C4.5 over ID3&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;accepts both continuous and discrete features&lt;/li&gt;
+  &lt;li&gt;handles incomplete data points;&lt;/li&gt;
+  &lt;li&gt;solves over-fitting problem by (very clever) bottom-up technique usually known as “pruning”;&lt;/li&gt;
+  &lt;li&gt;different weights can be applied the features that comprise the training data.&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><category term="machine learning" /><category term="blog" /><summary type="html">Boosting 与 bagging 区别联系 自举汇聚法(bootstrap aggregating)，也称为Bagging ，是从原始数据集选择S次后得到S个新数据集的一种技术。</summary></entry><entry><title type="html">Batch Normalization</title><link href="http://localhost:4000/archives/Batch-Normalization.html" rel="alternate" type="text/html" title="Batch Normalization" /><published>2019-11-09T00:00:00+08:00</published><updated>2019-11-09T00:00:00+08:00</updated><id>http://localhost:4000/archives/Batch-Normalization</id><content type="html" xml:base="http://localhost:4000/archives/Batch-Normalization.html">&lt;h2 id=&quot;what-is-batch-normalization&quot;&gt;What is batch normalization&lt;/h2&gt;
+
+&lt;h2 id=&quot;why-we-use-it&quot;&gt;Why we use it&lt;/h2&gt;
+&lt;p&gt;Generally speaking, when training a neural network, we want to normalize or standardize our data in pre-processing step to put all the data in the same scale. &lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;z = (x-m) / s&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Without normalization, relatively large inputs can cascade down through the layers in the network, which may cause imbalance gradients, which may cause the famous &lt;strong&gt;exploding gradient problem&lt;/strong&gt;.
+Besides, non-normalized data can significantly decrease our training speed.&lt;/p&gt;
+
+&lt;p&gt;But this is not the end of this &lt;em&gt;normalization story&lt;/em&gt;, once the normalized input data were fed into the network, weights of the model were updated during each epoch via SGD. If one of those weights ends up becoming drastically larger than other weights, then the output from its corresponding neuron might be extremely large and this imbalance will again continue to cascade through the network causing instability.&lt;/p&gt;
+
+&lt;p&gt;This is where BN comes into play. With BN, we have normalized data coming in and normalized data within the model.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;BN reduces the amount by what the hidden unit values shift around (covariance shift)&lt;/li&gt;
+  &lt;li&gt;BN allows each layer of a network to learn by itself a little bit more independently of other layers.&lt;/li&gt;
+  &lt;li&gt;It reduces overfitting because it has a slight regularization effects. Similar to dropout, it adds some noise to each hidden layer’s activations.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;how-to-implement-it-in-our-algorithm&quot;&gt;How to implement it in our algorithm&lt;/h2&gt;
+&lt;p&gt;Batch normalization normalizes the output of a previous activation layer by subtracting the batch mean and dividing by the batch standard deviation. 
+This process occurs on per batch basis, hence the name &lt;strong&gt;batch norm&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;alternatives&quot;&gt;Alternatives&lt;/h2&gt;
+
+&lt;h2 id=&quot;materials&quot;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=nUUqwaxLnWs&quot;&gt;Andrew Ng explains BN&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><category term="machine learning" /><summary type="html">What is batch normalization</summary></entry><entry><title type="html">Machine Learning Softwares</title><link href="http://localhost:4000/archives/Machine-Learning-Softwares.html" rel="alternate" type="text/html" title="Machine Learning Softwares" /><published>2019-11-01T00:00:00+08:00</published><updated>2019-11-01T00:00:00+08:00</updated><id>http://localhost:4000/archives/Machine-Learning-Softwares</id><content type="html" xml:base="http://localhost:4000/archives/Machine-Learning-Softwares.html">&lt;h1 id=&quot;seaborn&quot;&gt;Seaborn&lt;/h1&gt;
+
+&lt;p&gt;Question 1: why &lt;a href=&quot;https://seaborn.pydata.org/index.html&quot;&gt;Seaborn&lt;/a&gt; when we already have &lt;a href=&quot;https://matplotlib.org&quot;&gt;Matplotlib&lt;/a&gt; ?&lt;/p&gt;
+
+&lt;p&gt;Seaborn provides a high-level interface to Matplotlib, a powerful but sometimes unwieldy Python visualization library. As put by the official website:&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;If matplotlib “tries to make easy things easy and hard things possible”, seaborn tries to make a well-defined set of hard things easy too.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;functions&quot;&gt;Functions&lt;/h2&gt;
+&lt;p&gt;Making a scatter plot is just one line of code using the &lt;code class=&quot;highlighter-rouge&quot;&gt;lmplot()&lt;/code&gt; function.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;seaborn&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt; 
+&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lmplot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Attack'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Defense'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_style&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'whitegrid'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Set theme
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;violinplot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Type 1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Attack'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Violin plot
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;tensorflow-20&quot;&gt;TensorFlow 2.0&lt;/h1&gt;
+
+&lt;h2 id=&quot;tfkeras-vs-keras&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tf.keras&lt;/code&gt; V.S. &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;Keras is a high-level neural networks API, written in Python and capable of running on top of TensorFlow, CNTK, or Theano.&lt;/p&gt;
+
+&lt;p&gt;To understand the relationship between &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;tf.keras&lt;/code&gt;, we have to clarify the complicated, intertwined relationship between &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;TensorFlow&lt;/code&gt;.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;2015.03.27, &lt;a href=&quot;https://fchollet.com/&quot;&gt;Francois Chollet&lt;/a&gt; (i.e., the author of Deep Learning with Python) committed and released the first version of Keras to his &lt;a href=&quot;https://github.com/fchollet&quot;&gt;GitHub&lt;/a&gt; to facilitate his own research and experiments.&lt;/li&gt;
+  &lt;li&gt;Due to its easy-to-use API and the explosion of deep learning popularity, many developers, programmers, and machine learning practitioners flocked to Keras&lt;/li&gt;
+  &lt;li&gt;At the beginning, the default backend of &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; was Theano (until v1.1.10)&lt;/li&gt;
+  &lt;li&gt;Google released TensorFlow on November 9, 2015. Keras started supporting TensorFlow as a backend&lt;/li&gt;
+  &lt;li&gt;Eventually, TensorFlow became the most popular backend, Keras v1.1.0 switched to TensorFlow as its default backend&lt;/li&gt;
+  &lt;li&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;tf.keras&lt;/code&gt; submodule was introduced in TensorFlow v1.10.0, the first step in integrating &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; directly within the TensorFlow package itself.&lt;/li&gt;
+  &lt;li&gt;Keras v2.3.0 was released on September 17, 2019. This is the final release of Keras that will support backend other than TensorFlow. Bugs present in multi-backend Keras will only be fixed until April 2020.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;To summary, &lt;code class=&quot;highlighter-rouge&quot;&gt;tf.keras&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; are two different modules.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; is a high-level API, which at first has nothing to do with TensorFlow, but as the popularity of TF grows, &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; supported and switched to TF as the default backend. And now, it seems that TF will dominate the future of machine learning, &lt;code class=&quot;highlighter-rouge&quot;&gt;Keras&lt;/code&gt; is integrated into TF.&lt;/p&gt;
+
+&lt;p&gt;Tips: It is recommended to use &lt;code class=&quot;highlighter-rouge&quot;&gt;tf.keras&lt;/code&gt; for future projects as the Keras package will only support bug fixes.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-update-to-tensorflow-20&quot;&gt;How to update to &lt;code class=&quot;highlighter-rouge&quot;&gt;TensorFlow 2.0&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;First of all, a virtual environment is strongly recommended to avoid potential package conflicts.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtualenv &lt;span class=&quot;nt&quot;&gt;--system-site-packages&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; python3 myenv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;By running the above command, a virtual environment &lt;code class=&quot;highlighter-rouge&quot;&gt;myenv&lt;/code&gt; is created.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--system-site-packages&lt;/code&gt; allows the projects within the virtual environment &lt;code class=&quot;highlighter-rouge&quot;&gt;myenv&lt;/code&gt; access the global site-packages. The default setting does not allow this access.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-p python3&lt;/code&gt; is used to set the Python interpreter.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;myenv&lt;/code&gt; is the name of the virtual environment we created&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; /myenv/bin/activate
+pip &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--upgrade&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;2.0.0-rc1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The above command installs a 2.0.0-rc1 CPU-only version.&lt;/p&gt;
+
+&lt;p&gt;To choose the appropriate TensorFlow version, visit &lt;a href=&quot;https://www.tensorflow.org/install/pip&quot;&gt;https://www.tensorflow.org/install/pip&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Alternative TensorFlow packages:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tensorflow==2.0.0-rc1&lt;/code&gt; Preview TF 2.0 RC build for CPU-only (recommended).&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tensorflow-gpu==2.0.0-rc1&lt;/code&gt; Preview TF 2.0 RC build with GPU support&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tensorflow&lt;/code&gt; Latest stable release for CPU-only.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tensorflow-gpu&lt;/code&gt; Latest stable release with GPU support.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tf-nightly&lt;/code&gt; Preview nightly build for CPU-only.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;tf-nightly-gpu&lt;/code&gt; Preview nightly build with GPU support.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;test-the-installation&quot;&gt;Test the installation&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;import tensorflow as tf
+print(tf.__version__)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;tensorflow-20-colab&quot;&gt;TensorFlow 2.0 Colab&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://colab.research.google.com&quot;&gt;Google Colab&lt;/a&gt; is promoting TF 2.0 (current version is still TF 1.5, Nov 14, 2019), if you want to use TF2.0 on Colab, you can manually install it :&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;err&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pip&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gpu&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# or tensorflow-gpu==2.0.0-rc1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Note: you will have to install one of those packages with GPU support, otherwise there is no GPU acceleration even if you set the runtime type to GPU mode.&lt;/p&gt;
+
+&lt;h1 id=&quot;keras&quot;&gt;Keras&lt;/h1&gt;
+&lt;h2 id=&quot;callbacks-&quot;&gt;Callbacks ?&lt;/h2&gt;
+&lt;p&gt;A callback provides a set of functions to be applied at given stages of the training procedure.&lt;/p&gt;
+
+&lt;h3 id=&quot;earlystopping&quot;&gt;EarlyStopping&lt;/h3&gt;
+&lt;p&gt;Stop training when a monitored quantity has stopped improving.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;keras&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;callbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;callbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EarlyStopping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;monitor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'val_loss'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;min_delta&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;patience&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;verbose&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'auto'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baseline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;restore_best_weights&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Arguments:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;monitor&lt;/code&gt;: quantity to be monitored&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;min_delta&lt;/code&gt;: minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;patience&lt;/code&gt;: number of epochs that produced the monitored quantity with no improvement after which training will be stopped. Validation quantities may not be produced for every epoch, if the validation frequency (model.fit(validation_freq=5)) is greater than one.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;baseline&lt;/code&gt;: Baseline value for the monitored quantity to reach. Training will stop if the model doesn’t show improvement over the baseline.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;restore_best_weights&lt;/code&gt;: whether to restore model weights from the epoch with the best value of the monitored quantity. If False, the model weights obtained at the last step of training are used.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;mode&lt;/code&gt;: one of {auto, min, max}. In &lt;code class=&quot;highlighter-rouge&quot;&gt;min&lt;/code&gt; mode, training will stop when the quantity monitored has stopped decreasing; in &lt;code class=&quot;highlighter-rouge&quot;&gt;max&lt;/code&gt; mode it will stop when the quantity monitored has stopped increasing; in &lt;code class=&quot;highlighter-rouge&quot;&gt;auto&lt;/code&gt; mode, the direction is automatically inferred from the name of the monitored quantity.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;reducelronplateau&quot;&gt;ReduceLROnPlateau&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Reduce learning rate&lt;/strong&gt; when a metric has stopped improving. For example, if &lt;code class=&quot;highlighter-rouge&quot;&gt;val_loss&lt;/code&gt; stayed unreduced in 10 epochs, the learning rate is reduced by 90%, i.e., new_lr = lr * factor.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;reduce_lr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keras&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;callbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;callbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ReduceLROnPlateau&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;monitor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'val_loss'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;factor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;patience&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;verbose&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'auto'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;min_delta&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.0001&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cooldown&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;min_lr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Y_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;callbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce_lr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;sklearn&quot;&gt;Sklearn&lt;/h2&gt;
+&lt;h3 id=&quot;labelencoder&quot;&gt;LabelEncoder&lt;/h3&gt;
+&lt;p&gt;Encode labels with value between 0 and n_classes - 1.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;sklearn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preprocessing&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;le&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preprocessing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LabelEncoder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;le&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;apple&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;pen&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;apple&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;applepen&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# [0, 2, 0, 1]
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;le&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;classes_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# ['apple', 'pen', 'applepen']
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;labelbinarizer&quot;&gt;LabelBinarizer&lt;/h3&gt;
+&lt;p&gt;Very similar to &lt;code class=&quot;highlighter-rouge&quot;&gt;LabelEncoder&lt;/code&gt;, but creating a label indicator matrix, instead an array, from a list of multi-class labels.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;lb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sklearn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;preprocessing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LabelBinarizer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'female'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'male'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'others'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'female'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt; 
+&lt;span class=&quot;c1&quot;&gt;# [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0]]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;onehotencoder&quot;&gt;OneHotEncoder&lt;/h3&gt;
+&lt;p&gt;Encode categorical integer features as a one-hot numeric array. The input to this transformer must be an array-like of integers or strings, denoting the values taken on by categorical (discrete) features.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;enc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OneHotEncoder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle_unknown&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'ignore'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'female'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'male'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'others'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;enc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toarray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# [[1. 0. 0.], [0. 1. 0.], [0. 0. 1.]]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><category term="machine learning" /><category term="keras" /><category term="tensorflow" /><category term="seaborn" /><summary type="html">Seaborn</summary></entry><entry><title type="html">Set up a domain-based Email with Yandex</title><link href="http://localhost:4000/archives/Set-up-a-domain-based-Email-with-Yandex.html" rel="alternate" type="text/html" title="Set up a domain-based Email with Yandex" /><published>2019-10-31T00:00:00+08:00</published><updated>2019-10-31T00:00:00+08:00</updated><id>http://localhost:4000/archives/Set-up-a-domain-based-Email-with-Yandex</id><content type="html" xml:base="http://localhost:4000/archives/Set-up-a-domain-based-Email-with-Yandex.html">&lt;p&gt;搭建个人域名邮箱有很多好处，自定义任意前缀，无需繁琐的注册过程，更不用担心注册信息泄露而成为大数据中的一员。&lt;/p&gt;
+
+&lt;p&gt;域名邮箱搭建有多种方式，我们推荐使用&lt;a href=&quot;https://www.yandex.com&quot;&gt;Yandex&lt;/a&gt;(俄罗斯互联网巨头，旗下搜索引擎在本土市场占有率超60%)的服务来完成这项任务。推荐原因包括但不限于：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;注册相比自行搭建步骤简单&lt;/li&gt;
+  &lt;li&gt;由Yandex做担保，稳定可靠，无需自行维护，且比一般小众邮箱更为安全&lt;/li&gt;
+  &lt;li&gt;可自定义 1000 个邮箱(前缀)，每个用户10G容量，多开邮箱账号无需门槛&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;一言以蔽之，快速、方便、省心。&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;个人域名 (E.g., &lt;a href=&quot;https://www.name.com/referral/388121&quot;&gt;name.com&lt;/a&gt;上$1.99的&lt;code class=&quot;highlighter-rouge&quot;&gt;xyz&lt;/code&gt;域名)&lt;/li&gt;
+  &lt;li&gt;Yandex 邮箱 (注册入口 &lt;a href=&quot;https://mail.yandex.com&quot;&gt;mail.yandex.com&lt;/a&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;假设个人域名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;flyingkiwi.me&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;流程&quot;&gt;流程&lt;/h2&gt;
+&lt;h3 id=&quot;1-注册yandex-mail&quot;&gt;1. 注册Yandex Mail&lt;/h3&gt;
+
+&lt;p&gt;注册入口 &lt;a href=&quot;https://passport.yandex.com/registration&quot;&gt;passport.yandex.com&lt;/a&gt;。注册过程中会要求提供个人手机号码，如果不想提供，也可以通过设置安全问题来完成注册。&lt;/p&gt;
+
+&lt;p&gt;注：刚注册完的邮箱在24小时内尽量不要发送邮件，有可能被Yandex认定为spammer.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;center&quot; src=&quot;/images/2019/passport.yandex.png&quot; width=&quot;80%&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-注册域名邮箱&quot;&gt;2. 注册域名邮箱&lt;/h3&gt;
+&lt;p&gt;个人域名邮箱申请入口 &lt;a href=&quot;https://connect.yandex.com/pdd/&quot;&gt;Connect.Yandex&lt;/a&gt;。
+&lt;img class=&quot;center&quot; src=&quot;/images/2019/connect.yandex.png&quot; width=&quot;500px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;填入 &lt;code class=&quot;highlighter-rouge&quot;&gt;flyingkiwi.me&lt;/code&gt;进行注册。之后需要确认域名所有权，并将域名委托至 Yandex 服务器。&lt;/p&gt;
+
+&lt;p&gt;确认所有权主要通过以下4种方式 ：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Upload a file to the site directory&lt;/li&gt;
+  &lt;li&gt;Add a CNAME record&lt;/li&gt;
+  &lt;li&gt;Change the contact address through the registrar&lt;/li&gt;
+  &lt;li&gt;Delegate a domain to Yandex servers&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;很多人推荐第3种方法，即设置DNS record，即在DNS控制面板处添加TXT记录&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TXT yandex-verification 87cal27lacla22c2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;但实际上第一种方式更快速一些，即直接在服务器(VPS)根目录创建相应文件(&lt;a href=&quot;https://yandex.com/support/domain/setting/confirm.html#way1&quot;&gt;visit for more details&lt;/a&gt;)。基本上在3分钟之内就能被Yandex验证成功。&lt;/p&gt;
+
+&lt;h3 id=&quot;3-配置mx-spf-and-dkim&quot;&gt;3. 配置MX, SPF and DKIM&lt;/h3&gt;
+&lt;p&gt;Question : Why ?&lt;/p&gt;
+
+&lt;p&gt;Answer: 邮件服务器解析、降低个人域名邮件被标记为垃圾邮件的风险。&lt;/p&gt;
+
+&lt;h4 id=&quot;配置mx&quot;&gt;配置MX&lt;/h4&gt;
+&lt;p&gt;在DNS管理平台上添加 MX 记录，优先级填写 10 
+&lt;img class=&quot;center&quot; src=&quot;/images/2019/mx.yandex.png&quot; width=&quot;80%&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;spf-dkim&quot;&gt;SPF, DKIM&lt;/h4&gt;
+&lt;p&gt;
+在DNS管理平台上添加 TXT 记录 (&lt;a href=&quot;https://yandex.com/support/domain/set-mail/spf.html&quot;&gt;VISIT for more details&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Name: @  Value: v = spf1 redirect = _spf.yandex.net&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;DKIM signature is used to verify that whether a message really came from the supposed sender.
+To do so, we need to create a TXT record for the domain &lt;code class=&quot;highlighter-rouge&quot;&gt;flyingkiwi.me&lt;/code&gt; with a public key signature, which can be generated from &lt;a href=&quot;https://connect.yandex.com/portal/admin/customization/mail&quot;&gt;HERE&lt;/a&gt;. 
+For more detail, please visit &lt;a href=&quot;https://yandex.com/support/domain/set-mail/dkim.html&quot;&gt;THIS PAGE&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If all the previous steps are strictly followed, we should by now have our own domain-based Mail system. 
+Add a new user is simple, just visit &lt;a href=&quot;https://connect.yandex.com/portal/admin/departments/1&quot;&gt;PROTAL.Yandex&lt;/a&gt; and hit &lt;code class=&quot;highlighter-rouge&quot;&gt;add a person&lt;/code&gt;, the rest is straightforward.&lt;/p&gt;
+
+&lt;h2 id=&quot;config-domain-based-email-on-iphone&quot;&gt;Config domain-based email on iPhone&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Passwords &amp;amp; Accounts&lt;/code&gt; ➡ &lt;code class=&quot;highlighter-rouge&quot;&gt;Add Account&lt;/code&gt; ➡ &lt;code class=&quot;highlighter-rouge&quot;&gt;Other&lt;/code&gt; ➡ &lt;code class=&quot;highlighter-rouge&quot;&gt;Add Mail Account&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;And then type in &lt;code class=&quot;highlighter-rouge&quot;&gt;i@flyingkiwi.me&lt;/code&gt;(your first domain-based email) and password and go next. Other infos and configurations are shown in the following image.&lt;/p&gt;
+
+&lt;p&gt;Note that, the port for SMTP server &lt;code class=&quot;highlighter-rouge&quot;&gt;smtp.yandex.com&lt;/code&gt; is 465, while the default port given by iPhone is 587.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;center&quot; src=&quot;/images/2019/iphone.yandex.png&quot; width=&quot;50%&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;POP3: pop.yandex.com 995
+SMTP smtp.yandex.com 465
+IMAP imap.yandex.com 993
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;a-dns-configuration-example&quot;&gt;A DNS configuration example&lt;/h2&gt;
+
+&lt;p&gt;&lt;img class=&quot;center&quot; src=&quot;/images/2019/summary.yandex.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><category term="Mail" /><category term="Yandex" /><summary type="html">搭建个人域名邮箱有很多好处，自定义任意前缀，无需繁琐的注册过程，更不用担心注册信息泄露而成为大数据中的一员。</summary></entry><entry><title type="html">Make command-line scripts easier with Argparse</title><link href="http://localhost:4000/archives/Make-command-line-scripts-easier-with-Argparse.html" rel="alternate" type="text/html" title="Make command-line scripts easier with Argparse" /><published>2019-10-27T00:00:00+08:00</published><updated>2019-10-27T00:00:00+08:00</updated><id>http://localhost:4000/archives/Make-command-line-scripts-easier-with-Argparse</id><content type="html" xml:base="http://localhost:4000/archives/Make-command-line-scripts-easier-with-Argparse.html">&lt;p&gt;When we execute a Python script with command-line, to pass arguments to the script, we usually adopt a strategy like:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;endswith&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@gmail&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;do_something&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;    
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This is fine when the number of arguments is few, say, less than three. 
+But when there are dozens of options to choose, codes following the aforementioned style become cumbersome, ugly and hard to debug or to refine whenever it is necessary. 
+Lucky for us, with this &lt;a href=&quot;https://docs.python.org/3/library/argparse.html&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;argparse&lt;/code&gt;&lt;/a&gt; module, passing and parsing arguments can be easy and elegant.&lt;/p&gt;
+
+&lt;p&gt;This &lt;code class=&quot;highlighter-rouge&quot;&gt;argparse&lt;/code&gt; module is the “recommended command-line parsing module in the Python standard library” and makes it easy to write user-friendly command-line interfaces.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;argparse&lt;/code&gt; can figure out how to parse arguments out of &lt;code class=&quot;highlighter-rouge&quot;&gt;sys.argv&lt;/code&gt; so we do not have to define it manually. It can also automatically generates help and usage messages and issues errors when users give the program invalid arguments.&lt;/p&gt;
+
+&lt;p&gt;Great, that is exactly what we need in our scripts. 
+Now, step 1: embed the module into our script by writting:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;argparse&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# and creating an object
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArgumentParser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;examples-and-explanations&quot;&gt;Examples and Explanations&lt;/h1&gt;
+
+&lt;h2 id=&quot;add-argument&quot;&gt;Add argument&lt;/h2&gt;
+&lt;p&gt;Call the &lt;code class=&quot;highlighter-rouge&quot;&gt;add_argument()&lt;/code&gt; method to add program argument, the calls tell the object &lt;code class=&quot;highlighter-rouge&quot;&gt;parser&lt;/code&gt; how to take the strings on the command line and turn them into objects. E.g.,&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add_argument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;-d&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;--delete&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;remove invalid account from&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;And by running &lt;code class=&quot;highlighter-rouge&quot;&gt;py prog.py&lt;/code&gt;, the code returns&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;usage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DELETE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;optional&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;help&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DELETE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DELETE&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;remove&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invalid&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;account&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The help for this program will display&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;prog.py&lt;/code&gt; as the program name (regardless of where the program was invoked from)&lt;/li&gt;
+  &lt;li&gt;A new arg &lt;code class=&quot;highlighter-rouge&quot;&gt;-d&lt;/code&gt; we just added&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If you desire to display something other than the default &lt;code class=&quot;highlighter-rouge&quot;&gt;prog.py&lt;/code&gt;, you can simply pass a name to the &lt;code class=&quot;highlighter-rouge&quot;&gt;prog=&lt;/code&gt; arg.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArgumentParser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'prog=simple_script'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;epilog&quot;&gt;Epilog&lt;/h3&gt;
+&lt;p&gt;To display additional description of the program after the description of the arguments. Extra text can be specified using the &lt;code class=&quot;highlighter-rouge&quot;&gt;epilog=&lt;/code&gt; argument to ArgumentParser.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArgumentParser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'prog=simple_script'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;epilog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Do go visit google.com if you want to know more&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;formatter_class&quot;&gt;formatter_class&lt;/h3&gt;
+&lt;p&gt;Classes &lt;code class=&quot;highlighter-rouge&quot;&gt;class argparse.RawDescriptionHelpFormatter, class argparse.RawTextHelpFormatter&lt;/code&gt; help specifying an alternate formatting style. 
+For example, to display description in multiple line:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;textwrap&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArgumentParser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+     &lt;span class=&quot;n&quot;&gt;prog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'PROG'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+     &lt;span class=&quot;n&quot;&gt;formatter_class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RawDescriptionHelpFormatter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+     &lt;span class=&quot;n&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;textwrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dedent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'''&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\
+&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;         Please do not mess up this text!
+         --------------------------------
+             1. information line 1
+             2. information line 2
+             ...
+             998. information line 998
+         '''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Produces:
+&lt;img class=&quot;center&quot; src=&quot;/images/2019/python-argparse-1.png&quot; width=&quot;60%&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;add_help&quot;&gt;add_help&lt;/h3&gt;
+&lt;p&gt;By default, ArgumentParser objects add an option which simply displays the parser’s help message. For example, consider following code:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;argparse&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argparse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ArgumentParser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add_argument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'--foo'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'foo help'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;parser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parse_args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><category term="Python" /><category term="Script" /><summary type="html">When we execute a Python script with command-line, to pass arguments to the script, we usually adopt a strategy like:</summary></entry></feed>
