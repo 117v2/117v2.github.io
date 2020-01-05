@@ -1,4 +1,4 @@
-# [Check out the Blog 🍺](https://117ami.github.io)
+## [Everything is in the blog 🍺](https://117v2.github.io)
 
 
 

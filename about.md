@@ -5,10 +5,8 @@ permalink: /about/
 order: 3
 ---
 
-Hey, here is my Blog on AI and deep learning. 
+Designed to leave this page blank .
 
-Hope you enjoy it. 
 
-Drop me an email at [Nil-Lau](mailto:ssruoz@gmail.com) if you have any questions.
 
 
